@@ -135,7 +135,11 @@ exports.getInput = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 function getInput() {
     const project = core.getInput('project', { required: true });
-    const ignoreAuthor = core.getInput('ignore-author').split(',');
+    const ignoreAuthor = core
+        .getInput('ignore-author')
+        .split(',')
+        .map(author => author.trim())
+        .filter(author => author !== '');
     return {
         project,
         ignoreAuthor
@@ -181,7 +185,13 @@ const core = __importStar(__nccwpck_require__(7484));
  */
 function validate(event, options) {
     const { project } = options;
-    const re = RegExp(`^${project}-[0-9]+`);
+    let re;
+    try {
+        re = RegExp(`^(?:${project})-[0-9]+`);
+    }
+    catch (error) {
+        throw new Error(`Invalid project pattern '${project}': ${error.message}`);
+    }
     core.info('author ' + event.pull_request.user.login.toLowerCase());
     core.info('title ' + event.pull_request.title);
     for (const author of options.ignoreAuthor) {

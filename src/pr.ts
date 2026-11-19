@@ -10,7 +10,12 @@ import {Options} from './options'
  */
 export function validate(event: PullRequestEvent, options: Options): boolean {
   const {project} = options
-  const re = RegExp(`^${project}-[0-9]+`)
+  let re: RegExp
+  try {
+    re = RegExp(`^(?:${project})-[0-9]+`)
+  } catch (error) {
+    throw new Error(`Invalid project pattern '${project}': ${error.message}`)
+  }
 
   core.info('author ' + event.pull_request.user.login.toLowerCase())
   core.info('title ' + event.pull_request.title)

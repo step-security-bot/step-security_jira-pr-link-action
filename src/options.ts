@@ -7,7 +7,11 @@ export interface Options {
 
 export function getInput(): Options {
   const project = core.getInput('project', {required: true})
-  const ignoreAuthor = core.getInput('ignore-author').split(',')
+  const ignoreAuthor = core
+    .getInput('ignore-author')
+    .split(',')
+    .map(author => author.trim())
+    .filter(author => author !== '')
 
   return {
     project,
